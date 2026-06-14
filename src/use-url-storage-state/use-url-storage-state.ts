@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { kebabize } from '@/utils/url-helper';
 import { useStorage } from '@/use-storage/use-storage';
 
-const SEPARATOR = ','
+const SEPARATOR = ',';
 
 type useUrlStorageStateParams<T> = {
   storage?: Storage;

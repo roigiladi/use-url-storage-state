@@ -15,7 +15,7 @@ function never() {
   return false;
 }
 
-const SEPARATOR = ','
+const SEPARATOR = ',';
 
 /**
  * Helps in interacting with localstorage (or any other given storage) for storing/retrieving info.
