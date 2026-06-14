@@ -15,6 +15,8 @@ function never() {
   return false;
 }
 
+const SEPARATOR = ','
+
 /**
  * Helps in interacting with localstorage (or any other given storage) for storing/retrieving info.
  * @param key - the storage key by which the data needs to be stored
@@ -54,12 +56,10 @@ export function useStorage<ValueType>({
 
   const [value, setValue] = useState(initFromStorage);
 
-  const previousKeysJoined = previousKeys?.join(',');
+  const previousKeysJoined = previousKeys?.join(SEPARATOR);
   useEffect(() => {
-    if (!previousKeysJoined) return;
-
     previousKeysJoined
-      .split(',')
+      ?.split(SEPARATOR)
       .filter(Boolean)
       .forEach((oldKey) => {
         storage.removeItem(oldKey);
