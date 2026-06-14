@@ -203,6 +203,46 @@ function PathComponent({ pathKey }: { pathKey: string }) {
   );
 }
 
+test('cleans up previous keys using default path-based prefix', () => {
+  const oldKey1 = formatPathKey('old-key-1');
+  const oldKey2 = formatPathKey('old-key-2');
+  window.localStorage.setItem(oldKey1, 'stale');
+  window.localStorage.setItem(oldKey2, 'also stale');
+
+  renderHook(
+    () =>
+      useUrlStorageState({
+        ...defaultParams,
+        previousKeys: ['old-key-1', 'old-key-2'],
+      }),
+    { wrapper: BrowserRouter },
+  );
+
+  expect(window.localStorage.getItem(oldKey1)).toBeNull();
+  expect(window.localStorage.getItem(oldKey2)).toBeNull();
+});
+
+test('cleans up previous keys using custom prefix', () => {
+  const prefix = 'myApp';
+  const oldKey1 = `${prefix}_old-key-1`;
+  const oldKey2 = `${prefix}_old-key-2`;
+  window.localStorage.setItem(oldKey1, 'stale');
+  window.localStorage.setItem(oldKey2, 'also stale');
+
+  renderHook(
+    () =>
+      useUrlStorageState({
+        ...defaultParams,
+        prefix,
+        previousKeys: ['old-key-1', 'old-key-2'],
+      }),
+    { wrapper: BrowserRouter },
+  );
+
+  expect(window.localStorage.getItem(oldKey1)).toBeNull();
+  expect(window.localStorage.getItem(oldKey2)).toBeNull();
+});
+
 function formatPathKey(key: string = defaultParams.key) {
   return `urlStorage_${window.location.pathname}_${key}`;
 }

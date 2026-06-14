@@ -98,6 +98,7 @@ type useUrlStorageStateParams<T> = {
   defaultValue: T; // Default value if none exists
   prefix?: string; // Optional storage key prefix (default: current pathname)
   storage?: Storage; // Optional storage type (default: localStorage)
+  previousKeys?: string[]; // Old keys to remove from storage on mount
 };
 ```
 
@@ -180,6 +181,20 @@ const [theme, setTheme] = useUrlStorageState({
 });
 ```
 
+### Cleaning Up Old Storage Keys
+
+When you rename a key, pass the old names via `previousKeys` to remove stale storage entries on mount:
+
+```tsx
+import { useUrlStorageState } from 'use-url-storage-state';
+
+const [filters, setFilters] = useUrlStorageState({
+  key: 'search_filters',
+  defaultValue: { search: '', category: 'all' },
+  previousKeys: ['filters', 'old_filters'], // removed from storage on mount
+});
+```
+
 ## 📝 Notes
 
 1. URL parameters are always strings, so complex objects are automatically serialized/deserialized
@@ -215,6 +230,7 @@ type StorageProps<ValueType> = {
   serialize?: (value: ValueType) => string; // Custom serialization function. Default: JSON.stringify.
   deserialize?: (str: string) => ValueType; // Custom deserialization function. Default: JSON.parse.
   forceInit?: (value?: string) => boolean; // Force initialization logic. Default: never.
+  previousKeys?: string[]; // Old keys to remove from storage on mount.
 };
 ```
 

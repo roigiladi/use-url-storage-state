@@ -8,6 +8,7 @@ export type StorageProps<ValueType> = {
   serialize?: (value: ValueType) => string;
   deserialize?: (str: string) => ValueType;
   forceInit?: (value?: string) => boolean;
+  previousKeys?: string[];
 };
 
 function never() {
@@ -23,6 +24,7 @@ function never() {
  * @param serialize - method to serialize the given data before storing. Default: JSON.stringify
  * @param deserialize - method to deserialize the data after retrieving it. Default: JSON.parse
  * @param forceInit - default: never
+ * @param previousKeys - keys to remove on mount
  */
 export function useStorage<ValueType>({
   key,
@@ -32,6 +34,7 @@ export function useStorage<ValueType>({
   serialize = JSON.stringify,
   deserialize = JSON.parse,
   forceInit = never,
+  previousKeys,
 }: StorageProps<ValueType>) {
   const initFromStorage = useCallback(
     (storedValue = storage.getItem(key)) => {
@@ -50,6 +53,18 @@ export function useStorage<ValueType>({
   );
 
   const [value, setValue] = useState(initFromStorage);
+
+  const previousKeysJoined = previousKeys?.join(',');
+  useEffect(() => {
+    if (!previousKeysJoined) return;
+
+    previousKeysJoined
+      .split(',')
+      .filter(Boolean)
+      .forEach((oldKey) => {
+        storage.removeItem(oldKey);
+      });
+  }, [previousKeysJoined, storage]);
 
   const prevKeyRef = useRef(key);
 

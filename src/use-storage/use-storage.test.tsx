@@ -147,6 +147,26 @@ test(`when storage is cleared, value should reset`, () => {
   expect(state).toEqual(defaultValue);
 });
 
+test(`cleans up previous keys from storage on mount`, () => {
+  const oldKey1 = 'old-key-1';
+  const oldKey2 = 'old-key-2';
+  localStorage.setItem(oldKey1, 'stale data');
+  localStorage.setItem(oldKey2, 'more stale data');
+
+  renderHook(() =>
+    useStorage({
+      key: 'new-key',
+      defaultValue: 'default',
+      serialize: identity,
+      deserialize: identity,
+      previousKeys: [oldKey1, oldKey2],
+    }),
+  );
+
+  expect(localStorage.getItem(oldKey1)).toBeNull();
+  expect(localStorage.getItem(oldKey2)).toBeNull();
+});
+
 test(`skip updating state when storage event has data that's already updated`, () => {
   const currentValue = { val: 'current value' };
   const key = 'some-key';
